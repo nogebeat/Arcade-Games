@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture du Core - ARCADE</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles2.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" type="image/x-icon" href="https://intra.epitech.eu/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/androgyne" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/james-stroker" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+
+<body>
+    <div class="page-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <img src="images/arcade_logo.png" alt="ARCADE Logo">
+                <h1>ARCADE</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                <li><a href="installation.html"><i class="fas fa-play"></i> Démarrage</a></li>
+                <li class="active"><a href="core-arch.html"><i class="fas fa-project-diagram"></i> Architecture</a></li>
+                <li><a href="graphics.html"><i class="fas fa-palette"></i> Biblio. Graphiques</a></li>
+                <li><a href="games.html"><i class="fas fa-gamepad"></i> Créer un jeu</a></li>
+                <li><a href="api.html"><i class="fas fa-book"></i> API</a></li>
+            </ul>
+            <div class="theme-switch">
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>Mode sombre</span>
+            </div>
+        </nav>
+
+        <main>
+            <div class="content">
+                <header>
+                    <h1>Architecture du Core ARCADE</h1>
+                    <p class="subtitle">Comprendre le cœur du système et sa structure modulaire</p>
+                </header>
+
+                <section class="arch-overview">
+                    <h2 data-aos="fade-right" style="color: black;">Vue d'ensemble</h2>
+                    <p data-aos="fade-up" style="color: black; ">Le cœur du système ARCADE est conçu autour d'un principe de modularité et de chargement dynamique. Cette architecture permet de charger et décharger des bibliothèques graphiques et des jeux à l'exécution, sans avoir à recompiler le programme principal.</p>
+                    
+                    <div class="arch-diagram" data-aos="zoom-in">
+                        <img src="images/arcade_architecture.png" alt="Architecture ARCADE" class="img-fluid">
+                        <p class="text-center"><em>Diagramme d'architecture du système ARCADE</em></p>
+                    </div>
+                </section>
+
+                <section class="core-components">
+                    <h2 style="color: black; " >Composants principaux</h2>
+                    
+                    <div class="component-card" data-aos="fade-up">
+                        <h3 class="in"><i class="fas fa-cogs"></i> ArcadeCore</h3>
+                        <p>Le composant central qui gère tout le système. Il est responsable de:</p>
+                        <ul>
+                            <li>Détecter et charger les bibliothèques disponibles</li>
+                            <li>Gérer les états du programme (menu, jeu, game over)</li>
+                            <li>Intercepter et acheminer les entrées utilisateur</li>
+                            <li>Basculer entre les différentes bibliothèques graphiques et jeux</li>
+                            <li>Maintenir les scores</li>
+                        </ul>
+                        <div class="code-container">
+                            <pre><code class="language-cpp">class ArcadeCore {
+public:
+    ArcadeCore(const std::string &graphicLibPath);
+    ~ArcadeCore();
+
+    void run();
+
+private:
+    // États du core
+    enum class CoreState {
+        MENU,
+        GAME,
+        GAME_OVER,
+        EXIT
+    };
+
+    // Méthodes principales
+    void loadLibraries();
+    void displayMenu();
+    void handleMenuInputs();
+    void updateGame();
+    void renderGame();
+    
+    // Autres membres et méthodes...
+};</code></pre>
+                            <button class="copy-btn">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="component-card" data-aos="fade-up">
+                        <h3 class="in"><i class="fas fa-plug"></i> DLLoader</h3>
+                        <p>Le chargeur de bibliothèques dynamiques qui encapsule les fonctions dlopen, dlsym, dlclose pour:</p>
+                        <ul>
+                            <li>Charger les bibliothèques dynamiques au runtime</li>
+                            <li>Récupérer les symboles depuis les bibliothèques</li>
+                            <li>Instancier les modules (graphiques ou jeux)</li>
+                            <li>Décharger proprement les bibliothèques</li>
+                        </ul>
+                        <div class="code-container">
+                            <pre><code class="language-cpp">template<typename T>
+class DLLoaderImpl {
+public:
+    DLLoaderImpl();
+    ~DLLoaderImpl();
+
+    bool load(const std::string &path);
+    void unload();
+    T *getInstance();
+
+private:
+    void *_handle;
+    T *_instance;
+    // Autres membres...
+};</code></pre>
+                            <button class="copy-btn">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="component-card" data-aos="fade-up">
+                        <h3 class="in"><i class="fas fa-keyboard"></i> EventManager</h3>
+                        <p>Gestionnaire d'événements qui:</p>
+                        <ul>
+                            <li>Capture les entrées utilisateur (clavier, souris)</li>
+                            <li>Les traduit en événements génériques pour les modules</li>
+                            <li>Gère l'état des touches (pressée/relâchée)</li>
+                        </ul>
+                    </div>
+
+                    <div class="component-card" data-aos="fade-up">
+                        <h3 class="in"><i class="fas fa-trophy"></i> ScoreManager</h3>
+                        <p>Gestionnaire de scores qui:</p>
+                        <ul>
+                            <li>Enregistre et charge les meilleurs scores</li>
+                            <li>Trie et affiche les scores par jeu</li>
+                            <li>Persiste les données entre les sessions</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="interfaces">
+                    <h2 data-aos="fade-right" style="color: black; " >Interfaces principales</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="interface-card" data-aos="fade-up">
+                                <h3 class="in"><i class="fas fa-desktop"></i> IDisplayModule</h3>
+                                <p>Interface pour les bibliothèques graphiques qui définit:</p>
+                                <ul>
+                                    <li>L'initialisation et la fermeture de la fenêtre</li>
+                                    <li>Le rendu des éléments graphiques</li>
+                                    <li>La gestion des entrées spécifiques à la bibliothèque</li>
+                                </ul>
+                                <div class="code-container">
+                                    <pre><code class="language-cpp">class IDisplayModule {
+public:
+    virtual ~IDisplayModule() = default;
+
+    virtual bool init() = 0;
+    virtual void close() = 0;
+    virtual void clear() = 0;
+    virtual void display() = 0;
+    
+    virtual bool isOpen() const = 0;
+    virtual void drawText(const std::string &text, int x, int y, 
+                       Color color = Color::White) = 0;
+    virtual void drawShape(int x, int y, int width, int height, 
+                        Color color = Color::White) = 0;
+    // Autres méthodes...
+};</code></pre>
+                                    <button class="copy-btn">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="interface-card" data-aos="fade-up">
+                                <h3 class="in"><i class="fas fa-gamepad"></i> IGameModule</h3>
+                                <p>Interface pour les modules de jeu qui définit:</p>
+                                <ul>
+                                    <li>L'initialisation et la réinitialisation du jeu</li>
+                                    <li>La mise à jour de la logique du jeu</li>
+                                    <li>Le rendu des éléments spécifiques au jeu</li>
+                                    <li>La gestion des entrées du joueur</li>
+                                </ul>
+                                <div class="code-container">
+                                    <pre><code class="language-cpp">class IGameModule {
+public:
+    virtual ~IGameModule() = default;
+
+    virtual bool init() = 0;
+    virtual void reset() = 0;
+    virtual void update(float dt) = 0;
+    virtual void render(IDisplayModule *display) = 0;
+    virtual void handleEvent(const Event &event) = 0;
+    
+    virtual bool isGameOver() const = 0;
+    virtual int getScore() const = 0;
+    // Autres méthodes...
+};</code></pre>
+                                    <button class="copy-btn">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="state-machine">
+                    <h2 data-aos="fade-right" style="color: black; " >Machine à états</h2>
+                    <p data-aos="fade-up" style="color: black;">Le core ARCADE fonctionne comme une machine à états avec les états suivants:</p>
+                    
+                    <div class="state-diagram" data-aos="zoom-in">
+                        <img src="images/state_machine.png" alt="Machine à états" class="img-fluid">
+                        <p class="text-center"><em>Diagramme de la machine à états du Core</em></p>
+                    </div>
+                    
+                    <div class="state-descriptions" data-aos="fade-up">
+                        <div class="state">
+                            <h3 class="in">MENU</h3>
+                            <p>État initial où l'utilisateur peut sélectionner un jeu, une bibliothèque graphique et entrer son nom. Les principales fonctions associées sont <code>displayMenu()</code> et <code>handleMenuInputs()</code>.</p>
+                        </div>
+                        
+                        <div class="state">
+                            <h3 class="in">GAME</h3>
+                            <p>État actif pendant le jeu. Les principales fonctions associées sont <code>updateGame()</code> et <code>renderGame()</code>. Des touches spéciales permettent de changer de bibliothèque ou de jeu en cours de partie.</p>
+                        </div>
+                        
+                        <div class="state">
+                            <h3 class="in">GAME_OVER</h3>
+                            <p>État atteint lorsque la partie est terminée. Affiche le score final et propose de rejouer ou de retourner au menu. Les principales fonctions sont <code>displayGameOver()</code> et <code>handleGameOverInputs()</code>.</p>
+                        </div>
+                        
+                        <div class="state">
+                            <h3 class="in">EXIT</h3>
+                            <p>État de sortie qui provoque la fin de la boucle principale et ferme proprement l'application.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="flowchart" style="color: black;">
+                    <h2 data-aos="fade-right"  style="color: black;">Flux d'exécution</h2>
+                    
+                    <div class="flowchart-diagram" data-aos="zoom-in">
+                        <img src="images/flowchart.png" alt="Flux d'exécution" class="img-fluid">
+                        <p class="text-center"><em>Diagramme du flux d'exécution</em></p>
+                    </div>
+                    
+                    <ol class="flow-steps" data-aos="fade-up">
+                        <li><strong>Démarrage:</strong> Le programme principal charge la bibliothèque graphique initiale spécifiée en argument.</li>
+                        <li><strong>Initialisation:</strong> <code>ArcadeCore</code> détecte et charge les bibliothèques disponibles dans les répertoires <code>./lib/</code>.</li>
+                        <li><strong>Menu principal:</strong> Affichage du menu permettant la sélection d'un jeu et la saisie du nom du joueur.</li>
+                        <li><strong>Boucle de jeu:</strong> Une fois le jeu sélectionné, la boucle principale alterne entre:
+                            <ul>
+                                <li>Gestion des entrées avec <code>handleGameInputs()</code></li>
+                                <li>Mise à jour de la logique du jeu avec <code>updateGame()</code></li>
+                                <li>Rendu des éléments graphiques avec <code>renderGame()</code></li>
+                            </ul>
+                        </li>
+                        <li><strong>Fin de partie:</strong> Lorsque le jeu se termine, affichage de l'écran de fin avec le score et les options.</li>
+                        <li><strong>Nettoyage:</strong> À la sortie du programme, déchargement propre des bibliothèques et libération des ressources.</li>
+                    </ol>
+                </section>
+
+                <section class="library-management">
+                    <h2 data-aos="fade-right" style="color: black;">Gestion des bibliothèques</h2>
+                    <p data-aos="fade-up" style="color: black;">Le Core ARCADE gère les bibliothèques avec les méthodes suivantes:</p>
+                    
+                    <div class="method-descriptions" data-aos="fade-up">
+                        <div class="method">
+                            <h3 class="in">detectGraphicLibraries()</h3>
+                            <p style="color: black;">Recherche les bibliothèques graphiques dans le répertoire <code>./lib/</code> avec le préfixe spécifié.</p>
+                        </div>
+                        
+                        <div class="method">
+                            <h3 class="in">detectGameLibraries()</h3>
+                            <p style="color: black;">Recherche les bibliothèques de jeux dans le répertoire <code>./lib/</code> avec le préfixe spécifié.</p>
+                        </div>
+                        
+                        <div class="method">
+                            <h3 class="in">loadGraphicLibrary(path)</h3>
+                            <p style="color: black;">Charge une bibliothèque graphique spécifique et instancie le module d'affichage correspondant.</p>
+                            <div class="code-container">
+                                <pre><code class="language-cpp">bool ArcadeCore::loadGraphicLibrary(const std::string &path) {
+    if (_displayModule != nullptr) {
+        _displayModule->close();
+        _displayLoader.unload();
+    }
+    
+    if (!_displayLoader.load(path)) {
+        return false;
+    }
+    
+    _displayModule = _displayLoader.getInstance();
+    if (_displayModule == nullptr || !_displayModule->init()) {
+        _displayLoader.unload();
+        return false;
+    }
+    
+    return true;
+}</code></pre>
+                                <button class="copy-btn">Copy</button>
+                            </div>
+                        </div>
+                        
+                        <div class="method">
+                            <h3 class="in">loadGameLibrary(path)</h3>
+                            <p style="color: black;">Charge une bibliothèque de jeu spécifique et instancie le module de jeu correspondant.</p>
+                        </div>
+                        
+                        <div class="method">
+                            <h3 class="in">switchNextGraphiclib() / switchPreviousGraphiclib()</h3>
+                            <p style="color: black;">Méthodes pour basculer entre les bibliothèques graphiques disponibles.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container">
+    
+            <!-- Ligne du haut : ARCADE Project -->
+            <div class="row justify-content-center text-center mb-4">
+                <div class="col-md-6">
+                    <h5 class="text-uppercase mb-2">ARCADE Project</h5>
+                    <p class="mb-1">&copy; 2025 ARCADE Project Team</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="https://github.com/nogebeat/Arcade-games" class="text-light">
+                            <i class="fab fa-github"></i> Code source
+                        </a>
+                        <a href="mailto:james.gbetchedji@epitech.eu" class="text-light">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Ligne du bas : Réseaux et Contact -->
+            <div class="row">
+                <!-- Réseaux -->
+                <div class="col-md-6 mb-3 text-center text-md-start">
+                    <h5 class="text-uppercase">Réseaux</h5>
+                    <div class="d-flex justify-content-center justify-content-md-start gap-3 mt-2">
+                        <a href="#"><img src="https://lerondpoint.onrender.com/assets/logo/instainverse.png" alt="Instagram" class="img-fluid" width="30"></a>
+                        <a href="#"><img src="https://lerondpoint.onrender.com/assets/logo/twitterinverse.png" alt="Twitter" class="img-fluid" width="30"></a>
+                        <a href="https://wa.me/22956549199"><img src="https://lerondpoint.onrender.com/assets/logo/whatsappinverse.png" alt="WhatsApp" class="img-fluid" width="30"></a>
+                    </div>
+                </div>
+    
+                <!-- Contact -->
+                <div class="col-md-6 mb-3 text-center text-md-end">
+                    <h5 class="text-uppercase">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li>Adresse: Avenue ..., 01 BP 2377 Cotonou, Bénin</li>
+                        <li>Téléphone: <a href="tel:+22956549199" class="text-light">+229 56549199</a></li>
+                        <li>Email: <a href="mailto:nogeproductions@gmail.com" class="text-light">nogeproductions@gmail.com</a></li>
+                        <li>WhatsApp: <a href="https://wa.me/22956549199" class="text-light">Écrivez-nous ici</a></li>
+                    </ul>
+                </div>
+            </div>
+    
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>

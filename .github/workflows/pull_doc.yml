@@ -1,0 +1,30 @@
+name: Push folder to another repo
+
+on:
+  push:
+    branches:
+      - main  # ou la branche que tu modifies
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout this repo (forked Repo A)
+      uses: actions/checkout@v3
+
+    - name: Clone destination repo (Repo B)
+      run: |
+        git config --global user.email "james.gbetchedji@epitech.eu"
+        git config --global user.name "Noge"
+        git clone https://x-access-token:${{ secrets.PUSH_TOKEN }}@github.com/nogebeat/doc-arcade.git repo-b
+        rm -rf repo-b/*
+        mkdir -p repo-b/
+        cp -r doc/* repo-b/
+
+    - name: Commit and push to destination repo
+      run: |
+        cd repo-b
+        git add .
+        git commit -m "Synced folder from Repo A fork"
+        git push

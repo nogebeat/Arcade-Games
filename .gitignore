@@ -1,0 +1,23 @@
+*.out
+z
+*.log
+test
+*.gcna
+*.gcov
+*.gcda
+*.gcno
+unit_tests
+*.o
+.vscode/
+arcade
+Bootsrap/
+*Identifier
+*.c
+# *.html
+*.xml
+*.d
+obj/
+*.so
+CMakeLists.txt
+CMakeCache.txt
+build/

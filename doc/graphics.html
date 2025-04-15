@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèques Graphiques - ARCADE</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles2.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" type="image/x-icon" href="https://intra.epitech.eu/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/androgyne" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/james-stroker" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+
+<body>
+    <div class="page-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <img src="images/arcade_logo.png" alt="ARCADE Logo">
+                <h1>ARCADE</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                <li><a href="installation.html"><i class="fas fa-play"></i> Démarrage</a></li>
+                <li><a href="core-arch.html"><i class="fas fa-project-diagram"></i> Architecture</a></li>
+                <li class="active"><a href="graphics.html"><i class="fas fa-palette"></i> Biblio. Graphiques</a></li>
+                <li><a href="games.html"><i class="fas fa-gamepad"></i> Créer un jeu</a></li>
+                <li><a href="api.html"><i class="fas fa-book"></i> API</a></li>
+            </ul>
+            <div class="theme-switch">
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>Mode sombre</span>
+            </div>
+        </nav>
+
+        <main>
+            <div class="content">
+                <header>
+                    <h1>Bibliothèques Graphiques</h1>
+                    <p class="subtitle">Implémentation et utilisation des bibliothèques d'affichage dans ARCADE</p>
+                </header>
+
+                <section class="intro" data-aos="fade-up">
+                    <h2 style="color: black;" class="in">Introduction aux bibliothèques graphiques</h2>
+                    <p style="color: black;" class="in">Les bibliothèques graphiques sont des composants essentiels du projet ARCADE. Elles permettent d'afficher les jeux avec différents rendus graphiques tout en maintenant une logique de jeu cohérente. L'architecture du projet permet de changer de bibliothèque graphique en temps réel, sans redémarrer l'application.</p>
+                    
+                    <div class="feature-card">
+                        <i class="fas fa-plug"></i>
+                        <h3 class="in">Chargement dynamique</h3>
+                        <p class="in">Les bibliothèques graphiques sont chargées dynamiquement à l'exécution sous forme de bibliothèques partagées (.so).</p>
+                    </div>
+                </section>
+
+                <section class="interface-section" data-aos="fade-up">
+                    <h2 class="in">Interface IDisplayModule</h2>
+                    <p class="in">Toutes les bibliothèques graphiques doivent implémenter l'interface <code>IDisplayModule</code>. Cette interface définit les méthodes nécessaires pour initialiser, afficher et gérer les entrées utilisateur.</p>
+                    
+                    <div class="code-container">
+                        <button class="copy-btn">Copy</button>
+                        <pre><code class="language-cpp">namespace arcade {
+    class IDisplayModule {
+    public:
+        virtual ~IDisplayModule() = default;
+        virtual void init() = 0;                // Initialise la bibliothèque graphique
+        virtual void stop() = 0;                // Arrête la bibliothèque graphique
+        virtual void clear() = 0;               // Efface l'écran
+        virtual void render() = 0;              // Effectue le rendu
+        virtual void present() = 0;             // Présente le rendu à l'écran
+        virtual bool isKeyPressed(const std::string &key) = 0;  // Vérifie si une touche est pressée
+        virtual std::string getName() const = 0; // Retourne le nom de la bibliothèque
+        virtual void handleInput() = 0;         // Gère les entrées utilisateur
+        virtual bool shouldQuit() const = 0;    // Vérifie si l'utilisateur veut quitter
+        virtual void drawRect(int x, int y, int width, int height, int r, int g, int b, int a) = 0;  // Dessine un rectangle
+        virtual void drawText(const std::string& text, int x, int y, int r, int g, int b, int a) = 0; // Affiche du texte
+        virtual void drawCircle(int x, int y, int radius, int r, int g, int b, int a) = 0;  // Dessine un cercle
+    };
+}</code></pre>
+                    </div>
+
+                    <div class="interface-desc">
+                        <h3 class="in">Description des méthodes</h3>
+                        <div class="method">
+                            <h4><code>init()</code></h4>
+                            <p>Initialise la bibliothèque graphique (création de fenêtre, chargement de ressources, etc.).</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>stop()</code></h4>
+                            <p>Arrête proprement la bibliothèque graphique (libération des ressources, fermeture de fenêtre).</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>clear()</code></h4>
+                            <p>Efface le contenu de l'écran pour préparer un nouveau rendu.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>render()</code></h4>
+                            <p>Effectue le rendu des éléments graphiques.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>present()</code></h4>
+                            <p>Présente le rendu à l'écran (équivalent à un swap buffer).</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>isKeyPressed(const std::string &key)</code></h4>
+                            <p>Vérifie si une touche spécifique est pressée. Les touches sont identifiées par des chaînes standardisées comme "UP", "DOWN", "ESCAPE", etc.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>getName() const</code></h4>
+                            <p>Retourne le nom de la bibliothèque graphique pour l'affichage dans l'interface.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>handleInput()</code></h4>
+                            <p>Gère les événements d'entrée utilisateur (clavier, souris).</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>shouldQuit() const</code></h4>
+                            <p>Indique si l'utilisateur a demandé à quitter l'application (par exemple en fermant la fenêtre).</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>drawRect(int x, int y, int width, int height, int r, int g, int b, int a)</code></h4>
+                            <p>Dessine un rectangle aux coordonnées (x,y) avec la largeur, hauteur et couleur RGBA spécifiées.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>drawText(const std::string& text, int x, int y, int r, int g, int b, int a)</code></h4>
+                            <p>Affiche du texte aux coordonnées (x,y) avec la couleur RGBA spécifiée.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>drawCircle(int x, int y, int radius, int r, int g, int b, int a)</code></h4>
+                            <p>Dessine un cercle aux coordonnées (x,y) avec le rayon et la couleur RGBA spécifiés.</p>
+                        </div>
+                        <div class="method">
+                            <h4><code>virtual std::string getTextInput(const std::string& prompt, const std::string& initialText = "") = 0;</code></h4>
+                            <p>Permet de rentrer des caractères dans une chaine de charactères.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="implementation-example" data-aos="fade-up">
+                    <h2 style="color: black;"class="in">Exemple d'implémentation: SFML</h2>
+                    <p  style="color: black;" class="in">Voici un exemple d'implémentation de l'interface <code>IDisplayModule</code> avec la bibliothèque SFML.</p>
+
+                    <div class="implementation-tabs">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav_link2 active" id="header-tab" data-bs-toggle="tab" data-bs-target="#header-content" type="button" role="tab" >SFMLDisplay.hpp</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav_link2" id="impl-tab" data-bs-toggle="tab" data-bs-target="#impl-content" type="button" role="tab" aria-controls="impl-content" aria-selected="false">SFMLDisplay.cpp</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav_link2" id="module-tab" data-bs-toggle="tab" data-bs-target="#module-content" type="button" role="tab" aria-controls="module-content" aria-selected="false">SFMLModule.cpp</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="header-content" role="tabpanel" aria-labelledby="header-tab">
+                                <div class="code-container">
+                                    <button class="copy-btn">Copy</button>
+                                    <pre><code class="language-cpp">/*
+** EPITECH PROJECT, 2025
+** B-OOP-400-COT-4-1-arcade-james.gbetchedji
+** File description:
+** SFMLDisplay
+*/
+
+#ifndef SFMLDISPLAY_HPP_
+#define SFMLDISPLAY_HPP_
+
+#include "IDisplayModule.hpp"
+#include &lt;SFML/Graphics.hpp&gt;
+#include &lt;SFML/Window.hpp&gt;
+#include &lt;SFML/System.hpp&gt;
+#include &lt;map&gt;
+
+namespace arcade {
+    class SFMLDisplay : public IDisplayModule {
+    public:
+        SFMLDisplay();
+        ~SFMLDisplay() override;
+        
+        void init() override;
+        void stop() override;
+        void clear() override;
+        void render() override;
+        void present() override;
+        bool isKeyPressed(const std::string &key) override;
+        std::string getName() const override;
+        void handleInput() override;
+        bool shouldQuit() const override;
+        void drawRect(int x, int y, int width, int height, int r, int g, int b, int a) override;
+        void drawText(const std::string& text, int x, int y, int r, int g, int b, int a) override;
+        void drawCircle(int x, int y, int radius, int r, int g, int b, int a) override;
+        virtual void drawCircle(int x, int y, int radius, int r, int g, int b, int a) = 0;
+        virtual std::string getTextInput(const std::string& prompt, const std::string& initialText = "") = 0;
+        
+    private:
+        sf::RenderWindow* _window;
+        sf::Font _font;
+        std::map&lt;std::string, sf::Keyboard::Key&gt; _keyMap;
+        bool _quit;
+    };
+}
+
+#endif /* !SFMLDISPLAY_HPP_ */</code></pre>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="impl-content" role="tabpanel" aria-labelledby="impl-tab">
+                                <div class="code-container">
+                                    <button class="copy-btn">Copy</button>
+                                    <pre><code class="language-cpp">/*
+** EPITECH PROJECT, 2025
+** B-OOP-400-COT-4-1-arcade-james.gbetchedji
+** File description:
+** SFMLDisplay
+*/
+
+#include "../includes/Display/SFMLDisplay.hpp"
+
+using namespace arcade;
+
+namespace arcade {
+
+    SFMLDisplay::SFMLDisplay() : _window(nullptr), _quit(false) {
+        _keyMap["UP"]     = sf::Keyboard::Up;
+        _keyMap["DOWN"]   = sf::Keyboard::Down;
+        _keyMap["LEFT"]   = sf::Keyboard::Left;
+        _keyMap["RIGHT"]  = sf::Keyboard::Right;
+        _keyMap["ESCAPE"] = sf::Keyboard::Escape;
+        _keyMap["RETURN"] = sf::Keyboard::Enter;
+        _keyMap["SPACE"]  = sf::Keyboard::Space;
+        _keyMap["R"]      = sf::Keyboard::R;
+        _keyMap["N"]      = sf::Keyboard::N;
+        _keyMap["Q"]      = sf::Keyboard::Q;
+        _keyMap["E"]      = sf::Keyboard::E;
+        _keyMap["M"]      = sf::Keyboard::M;
+        _keyMap["F5"]     = sf::Keyboard::F5;
+        _keyMap["F6"]     = sf::Keyboard::F6;
+        _keyMap["P"]      = sf::Keyboard::P;
+        _keyMap["Y"]      = sf::Keyboard::Y;
+    }
+
+    // Autres méthodes de l'implémentation...
+}</code></pre>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="module-content" role="tabpanel" aria-labelledby="module-tab">
+                                <div class="code-container">
+                                    <button class="copy-btn">Copy</button>
+                                    <pre><code class="language-cpp">/*
+** EPITECH PROJECT, 2025
+** B-OOP-400-COT-4-1-arcade-james.gbetchedji [WSL: Ubuntu]
+** File description:
+** SFMLModule
+*/
+
+#include "../includes/Display/SFMLDisplay.hpp"
+
+extern "C" {
+    arcade::IDisplayModule *createDisplay()
+    {
+        return new arcade::SFMLDisplay();
+    }
+    
+    void destroyDisplay(arcade::IDisplayModule *display)
+    {
+        delete display;
+    }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="creation-guide" data-aos="fade-up">
+                    <h2 style="color: black;"class="in">Créer une nouvelle bibliothèque graphique</h2>
+                    <p style="color: black; class="in">Voici les étapes à suivre pour créer une nouvelle bibliothèque graphique compatible avec ARCADE :</p>
+                    
+                    <div class="step-container">
+                        <div class="step">
+                            <h3 class="in"><i class="fas fa-1"></i> - Créer une classe qui implémente IDisplayModule</h3>
+                            <p class="in">Créez une classe qui hérite de l'interface <code>IDisplayModule</code> et implémentez toutes ses méthodes virtuelles.</p>
+                        </div>
+                        
+                        <div class="step">
+                            <h3 class="in"><i class="fas fa-2"></i> - Implémenter les fonctions d'exportation</h3>
+                            <p class="in">Définissez les fonctions externes <code>createDisplay</code> et <code>destroyDisplay</code> qui seront utilisées par le chargeur de bibliothèques dynamiques.</p>
+                            <div class="code-container">
+                                <button class="copy-btn">Copy</button>
+                                <pre><code class="language-cpp">extern "C" {
+    arcade::IDisplayModule *createDisplay()
+    {
+        return new YourDisplayModule();
+    }
+    
+    void destroyDisplay(arcade::IDisplayModule *display)
+    {
+        delete display;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <h3 class="in"><i class="fas fa-3"></i> - Compiler la bibliothèque partagée</h3>
+                            <p class="in">Compilez votre code en une bibliothèque partagée (.so) selon la convention de nommage <code>arcade_&lt;nom_lib&gt;.so</code> et placez-la dans le répertoire <code>./lib/</code>.</p>
+                            <div class="code-container">
+                                <button class="copy-btn">Copy</button>
+                                <pre><code class="language-bash">g++ -shared -fPIC -o lib/arcade_mylib.so MyDisplay.cpp MyModule.cpp -lmygraphlib</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="implementation-notes" data-aos="fade-up">
+                    <h2 style="color: black ;" class="in">Conseils d'implémentation</h2>
+                    
+                    <div class="advice-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3 class="in">Gestion des touches</h3>
+                        <p class="in">Utilisez une map pour faire correspondre les noms de touches standardisés aux constantes spécifiques de votre bibliothèque graphique.</p>
+                    </div>
+                    
+                    <div class="advice-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3 class="in">Gestion des ressources</h3>
+                        <p class="in">Assurez-vous de bien initialiser et libérer les ressources dans les méthodes <code>init()</code> et <code>stop()</code>.</p>
+                    </div>
+                    
+                    <div class="advice-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3 class="in">Compatibilité</h3>
+                        <p class="in">N'oubliez pas que votre bibliothèque doit être interchangeable avec les autres. Assurez-vous que les coordonnées et dimensions sont cohérentes.</p>
+                    </div>
+                    
+                    <div class="advice-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3 class="in">Tests</h3>
+                        <p class="in">Testez votre bibliothèque avec différents jeux pour vous assurer de sa compatibilité et de son bon fonctionnement.</p>
+                    </div>
+                </section>
+
+                <section class="supported-libs" data-aos="fade-up">
+                    <h2 style="color: black;"class="in">Bibliothèques graphiques supportées</h2>
+                    <p style="color: black;" class="in">ARCADE supporte actuellement les bibliothèques graphiques suivantes :</p>
+                    
+                    <div class="libs-grid">
+                        <div class="lib-card">
+                            <i class="fas fa-check-circle" style="color: white;"></i>
+                            <h3 class="in">nCurses</h3>
+                            <p class="in">Interface en mode texte pour terminal.</p>
+                        </div>
+                        
+                        <div class="lib-card">
+                            <i class="fas fa-check-circle" style="color: white;"></i>
+                            <h3 class="in">SDL2</h3>
+                            <p class="in">Simple DirectMedia Layer, bibliothèque multimédia cross-platform.</p>
+                        </div>
+                        
+                        <div class="lib-card">
+                            <i class="fas fa-check-circle" style="color: white;" ></i>
+                            <h3 class="in">SFML</h3>
+                            <p class="in">Simple and Fast Multimedia Library, bibliothèque orientée objet pour le développement de jeux.</p>
+                        </div>
+                        
+                        <div class="lib-card future">
+                            <i class="fas fa-plus-circle" style="color: white;"></i>
+                            <h3 class="in">Votre bibliothèque ?</h3>
+                            <p class="in">Suivez ce guide pour ajouter votre propre bibliothèque graphique au projet !</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container">
+    
+            <!-- Ligne du haut : ARCADE Project -->
+            <div class="row justify-content-center text-center mb-4">
+                <div class="col-md-6">
+                    <h5 class="text-uppercase mb-2">ARCADE Project</h5>
+                    <p class="mb-1">&copy; 2025 ARCADE Project Team</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="https://github.com/nogebeat/Arcade-games" class="text-light">
+                            <i class="fab fa-github"></i> Code source
+                        </a>
+                        <a href="mailto:james.gbetchedji@epitech.eu" class="text-light">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Ligne du bas : Réseaux et Contact -->
+            <div class="row">
+                <!-- Réseaux -->
+                <div class="col-md-6 mb-3 text-center text-md-start">
+                    <h5 class="text-uppercase">Réseaux</h5>
+                    <div class="d-flex justify-content-center justify-content-md-start gap-3 mt-2">
+                        <a href="#"><img src="https://lerondpoint.onrender.com/assets/logo/instainverse.png" alt="Instagram" class="img-fluid" width="30"></a>
+                        <a href="#"><img src="https://lerondpoint.onrender.com/assets/logo/twitterinverse.png" alt="Twitter" class="img-fluid" width="30"></a>
+                        <a href="https://wa.me/22956549199"><img src="https://lerondpoint.onrender.com/assets/logo/whatsappinverse.png" alt="WhatsApp" class="img-fluid" width="30"></a>
+                    </div>
+                </div>
+    
+                <!-- Contact -->
+                <div class="col-md-6 mb-3 text-center text-md-end">
+                    <h5 class="text-uppercase">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li>Adresse: Avenue ..., 01 BP 2377 Cotonou, Bénin</li>
+                        <li>Téléphone: <a href="tel:+22956549199" class="text-light">+229 56549199</a></li>
+                        <li>Email: <a href="mailto:nogeproductions@gmail.com" class="text-light">nogeproductions@gmail.com</a></li>
+                        <li>WhatsApp: <a href="https://wa.me/22956549199" class="text-light">Écrivez-nous ici</a></li>
+                    </ul>
+                </div>
+            </div>
+    
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>

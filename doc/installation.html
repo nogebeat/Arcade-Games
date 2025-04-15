@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide de démarrage - ARCADE</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="prism.css">
+    <link rel="icon" type="image/x-icon" href="https://intra.epitech.eu/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="images/arcade_logo.png" alt="ARCADE Logo">
+            <h1>ARCADE</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Accueil</a></li>
+            <li class="active"><a href="installation.html"><i class="fas fa-play"></i> Démarrage</a></li>
+            <li><a href="core-arch.html"><i class="fas fa-project-diagram"></i> Architecture</a></li>
+            <li><a href="graphics.html"><i class="fas fa-palette"></i> Biblio. Graphiques</a></li>
+            <li><a href="games.html"><i class="fas fa-gamepad"></i> Créer un jeu</a></li>
+            <li><a href="api.html"><i class="fas fa-book"></i> API</a></li>
+        </ul>
+        <div class="theme-switch">
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider round"></span>
+            </label>
+            <span>Mode sombre</span>
+        </div>
+    </nav>
+
+    <main>
+        <div class="content">
+            <header>
+                <h1>Guide de démarrage</h1>
+                <p class="subtitle">Comment installer, compiler et utiliser le projet ARCADE</p>
+            </header>
+
+            <section class="documentation-section">
+                <h2>Prérequis</h2>
+                <p class="neww">Avant de démarrer avec le projet ARCADE, assurez-vous d'avoir les éléments suivants installés sur votre système :</p>
+                <ul class="requirements-list">
+                    <li><i class="fas fa-check"></i> Compilateur C++ supportant C++17</li>
+                    <li><i class="fas fa-check"></i> Make ou CMake</li>
+                    <li><i class="fas fa-check"></i> Bibliothèque ncurses</li>
+                    <li><i class="fas fa-check"></i> Bibliothèque SDL2 avec SDL2_image et SDL2_ttf</li>
+                    <li><i class="fas fa-check"></i> Bibliothèque SFML</li>
+                </ul>
+
+                <h3 class="neww" >Installation des dépendances</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Ubuntu/Debian</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash">sudo apt-get update
+sudo apt-get install build-essential cmake libncurses5-dev
+sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+sudo apt-get install libsfml-dev</code></pre>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Fedora</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash">sudo dnf update
+sudo dnf install gcc-c++ cmake ncurses-devel
+sudo dnf install SDL2-devel SDL2_image-devel SDL2_ttf-devel
+sudo dnf install SFML-devel</code></pre>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>macOS (avec Homebrew)</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash">brew update
+brew install cmake ncurses
+brew install sdl2 sdl2_image sdl2_ttf
+brew install sfml</code></pre>
+                </div>
+            </section>
+
+            <section class="documentation-section">
+                <h2>Téléchargement du projet</h2>
+                <p>Clonez le dépôt du projet ARCADE à partir de GitHub :</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash">git clone https://github.com/nogebeat/B-OOP-400-COT-4-1-arcade-james.gbetchedji.git
+cd B-OOP-400-COT-4-1-arcade-james.gbetchedji</code></pre>
+                </div>
+                <p>ou Telecharger le Zip du projet :</p>
+                <div class="code-container">
+                    <a href="https://github.com/nogebeat/B-OOP-400-COT-4-1-arcade-james.gbetchedji/releases/download/v1.0.1/arcade.zip" class="btn secondary">Téléchargé le projet zip <i class="fab fa-code"></i></a>
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash">unzip arcade
+cd arcade</code></pre>
+            </section>
+
+            <section class="documentation-section">
+                <h2>Compilation</h2>
+                <p>Le projet ARCADE peut être compilé en utilisant Make ou CMake. Voici comment utiliser chaque méthode :</p>
+                
+                <h3>Compilation avec Make</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash"># Compiler l'ensemble du projet
+make
+
+# Compiler uniquement le core
+make core
+
+# Compiler uniquement les jeux
+make games
+
+# Compiler uniquement les bibliothèques graphiques
+make graphicals
+
+# Nettoyer les fichiers objets
+make clean
+
+# Nettoyer les fichiers objets et binaires
+make fclean
+
+# Recompiler
+make re</code></pre>
+                </div>
+
+                <h3>Compilation avec CMake</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash">mkdir -p build && cd build
+cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+cd ..</code></pre>
+                </div>
+                <p class="note"><i class="fas fa-info-circle"></i> Note: L'implémentation CMake est en cours de développement et peut ne pas être complètement fonctionnelle.</p>
+            </section>
+
+            <section class="documentation-section">
+                <h2>Utilisation</h2>
+                <p>Pour lancer l'application ARCADE, vous devez spécifier une bibliothèque graphique au démarrage :</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-bash"># Lancer avec SDL2
+./arcade ./lib/arcade_sdl2.so
+
+# Ou lancer avec SFML
+./arcade ./lib/arcade_sfml.so
+
+# Ou lancer avec NCurses
+./arcade ./lib/arcade_ncurses.so</code></pre>
+                </div>
+
+                <h3>Contrôles</h3>
+                <div class="controls-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Touche</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><kbd>F5</kbd></td>
+                                <td>Changer de bibliothèque graphique (précédente)</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>F6</kbd></td>
+                                <td>Changer de bibliothèque graphique (suivante)</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>←</kbd> / <kbd>→</kbd></td>
+                                <td>Changer de jeu (dans le menu)</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>↑</kbd> / <kbd>↓</kbd></td>
+                                <td>Changer de bibliothèque graphique (dans le menu)</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>Enter</kbd></td>
+                                <td>Lancer le jeu sélectionné</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>R</kbd></td>
+                                <td>Redémarrer le jeu</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>M</kbd></td>
+                                <td>Retourner au menu</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>N</kbd></td>
+                                <td>Modifier le nom d'utilisateur</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>Flèches directionnelles</kbd></td>
+                                <td>Contrôler le jeu</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>Espace</kbd></td>
+                                <td>Action (selon le jeu)</td>
+                            </tr>
+                            <tr>
+                                <td><kbd>Échap</kbd></td>
+                                <td>Quitter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="documentation-section">
+                <h2>Structure des dossiers</h2>
+                <p>Le projet ARCADE est organisé selon la structure suivante :</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Structure des dossiers</span>
+                        <button class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <pre class="code-block"><code class="language-plaintext">.
+├── Makefile
+├── CMakeLists.txt
+├── assets
+│   └── fonts
+│       └── duckhunt.ttf
+├── Ressources
+│   ├── bg.png
+│   ├── ch.png
+│   ├── duckhunt.ttf
+│   ├── heart.png
+│   ├── pause.png
+│   ├── push.ogg
+│   ├── push.wav
+│   ├── score.png
+│   └── ss.png
+├── includes
+│   ├── Core
+│   │   ├── ArcadeCore.hpp
+│   │   ├── DLLoader.hpp
+│   │   ├── EventManager.hpp
+│   │   └── ScoreManager.hpp
+│   ├── Display
+│   │   ├── NCursesDisplay.hpp
+│   │   ├── SDL2Display.hpp
+│   │   └── SFMLDisplay.hpp
+│   ├── Interfaces
+│   │   ├── IDisplayModule.hpp
+│   │   └── IGameModule.hpp
+│   └── Utils
+│       ├── Error.hpp
+│       └── Types.hpp
+├── srcs
+│   ├── Core
+│   │   ├── ArcadeCore.cpp
+│   │   ├── DLLoader.cpp
+│   │   ├── DisplayGames.cpp
+│   │   ├── EventManager.cpp
+│   │   ├── Menu
+│   │   │   ├── Menu_Ncurses.cpp
+│   │   │   ├── Menu_SFML.cpp
+│   │   │   └── Menu_sdl2.cpp
+│   │   └── ScoreManager.cpp
+│   ├── Games
+│   │   ├── Hunter
+│   │   │   ├── Hunter.cpp
+│   │   │   ├── Hunter.hpp
+│   │   │   └── HunterModule.cpp
+│   │   ├── Nibbler
+│   │   │   ├── Nibbler.cpp
+│   │   │   ├── Nibbler.hpp
+│   │   │   └── NibblerModule.cpp
+│   │   └── Snake
+│   │       ├── Snake.cpp
+│   │       ├── Snake.hpp
+│   │       └── SnakeModule.cpp
+│   ├── Graphics
+│   │   ├── NCurses
+│   │   │   ├── NCursesDisplay.cpp
+│   │   │   └── NCursesModule.cpp
+│   │   ├── SDL2
+│   │   │   ├── SDL2Display.cpp
+│   │   │   └── SDL2Module.cpp
+│   │   └── SFML
+│   │       ├── SFMLDisplay.cpp
+│   │       └── SFMLModule.cpp
+│   └── main
+│       └── main.cpp
+├── lib
+│   ├── Games
+│   └── Graphics
+└── doc
+    ├── index.html
+    ├── getting-started.html
+    ├── core-arch.html
+    ├── graphics.html
+    ├── games.html
+    ├── api.html
+    ├── styles.css
+    └── script.js</code></pre>
+                </div>
+            </section>
+
+            <section class="documentation-section">
+                <h2>Prochaines étapes</h2>
+                <p>Maintenant que vous avez installé et configuré ARCADE, vous pouvez :</p>
+                <div class="next-steps">
+                    <a href="core-arch.html" class="next-step-card">
+                        <i class="fas fa-project-diagram"></i>
+                        <h3>Explorer l'architecture</h3>
+                        <p>Comprendre comment fonctionne le cœur du système ARCADE</p>
+                    </a>
+                    <a href="graphics.html" class="next-step-card">
+                        <i class="fas fa-palette"></i>
+                        <h3>Créer une bibliothèque graphique</h3>
+                        <p>Apprendre à implémenter votre propre bibliothèque d'affichage</p>
+                    </a>
+                    <a href="games.html" class="next-step-card">
+                        <i class="fas fa-gamepad"></i>
+                        <h3>Créer un jeu</h3>
+                        <p>Développer un nouveau jeu compatible avec ARCADE</p>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container">
+    
+            <!-- Ligne du haut : ARCADE Project -->
+            <div class="row justify-content-center text-center mb-4">
+                <div class="col-md-6">
+                    <h5 class="text-uppercase mb-2">ARCADE Project</h5>
+                    <p class="mb-1">&copy; 2025 ARCADE Project Team</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="https://github.com/nogebeat/Arcade-games" class="text-light">
+                            <i class="fab fa-github"></i> Code source
+                        </a>
+                        <a href="mailto:james.gbetchedji@epitech.eu" class="text-light">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Ligne du bas : Réseaux et Contact -->
+            <div class="row">
+                <!-- Réseaux -->
+                <div class="col-md-6 mb-3 text-center text-md-start">
+                    <h5 class="text-uppercase">Réseaux</h5>
+                    <div class="d-flex justify-content-center justify-content-md-start gap-3 mt-2">
+                        <a href="#"><img src="https://lerondpoint.onrender.com/assets/logo/instainverse.png" alt="Instagram" class="img-fluid" width="30"></a>
+                        <a href="#"><img src="https://lerondpoint.onrender.com/assets/logo/twitterinverse.png" alt="Twitter" class="img-fluid" width="30"></a>
+                        <a href="https://wa.me/22956549199"><img src="https://lerondpoint.onrender.com/assets/logo/whatsappinverse.png" alt="WhatsApp" class="img-fluid" width="30"></a>
+                    </div>
+                </div>
+    
+                <!-- Contact -->
+                <div class="col-md-6 mb-3 text-center text-md-end">
+                    <h5 class="text-uppercase">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li>Adresse: Avenue ..., 01 BP 2377 Cotonou, Bénin</li>
+                        <li>Téléphone: <a href="tel:+22956549199" class="text-light">+229 56549199</a></li>
+                        <li>Email: <a href="mailto:nogeproductions@gmail.com" class="text-light">nogeproductions@gmail.com</a></li>
+                        <li>WhatsApp: <a href="https://wa.me/22956549199" class="text-light">Écrivez-nous ici</a></li>
+                    </ul>
+                </div>
+            </div>
+    
+        </div>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>

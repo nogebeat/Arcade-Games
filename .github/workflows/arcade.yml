@@ -1,0 +1,98 @@
+name: Arcade
+
+on:
+  push:
+    branches-ignore:
+    - "ga-ignore-*"
+  pull_request:
+    branches-ignore:
+    - "ga-ignore-*"
+
+
+jobs:
+  check_coding_style:
+    name: "coding-style errors"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Download coding style script from another repo"
+        run: curl -o check_coding_style.sh https://raw.githubusercontent.com/Epitech/coding-style-checker/refs/heads/main/coding-style.sh
+
+      - name: "Give execution permission to the script"
+        run: chmod +x check_coding_style.sh
+
+      - name: Set TERM variable
+        run: echo "export TERM=xterm" >> ~/.bashrc && export TERM=xterm
+
+      - name: "Run the custom coding style check script"
+        run: ./check_coding_style.sh $(pwd) $(pwd)
+
+      - name: "Analyze coding style results"
+        run: |
+          OUTPUT=$(./check_coding_style.sh $(pwd) $(pwd))
+          echo "$OUTPUT"
+
+          if echo "$OUTPUT" | grep -q "0 coding style error(s)"; then
+            echo "✅ No coding style errors detected. Job successful."
+          else
+            echo "❌ Coding style errors detected!"
+            echo "$OUTPUT"
+            exit 1  # Échoue le job si des erreurs sont trouvées
+          fi
+
+  check_repo:
+    name: "Checks if the repository is clean and void of any unwanted files (temp files, binary files, etc.)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: check_repo
+        run: |
+          UNWANTED_FILES=$(find . -type f -not -path "./git/*" -wholename "*tmp/*" -or -name "*~" -or -name "*.o" -or -name "*.so" -or -name "*.gcno" -or -name "*.gcda" -or -name "*#" -or -name "#*" -or -name "*.gcov")
+          for FILES in $UNWANTED_FILES; do
+            echo "::error file=${FILES#./},title=Unwanted file detected::${FILES#./}"
+          done
+          if [[ -n $UNWANTED_FILES ]]
+          then
+            exit 1
+          else
+            echo No unwanted files detected
+          fi
+
+  check_program_compilation:
+    needs: [check_repo]
+    name: "Checks if make compil and test all binary listed in the ARGUMENTS variable"
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Make Project"
+        run: make
+        timeout-minutes: 2
+
+      - name: "Make clean"
+        run: make clean
+        timeout-minutes: 1
+
+      - name: "Make recompilation"
+        run: make re
+        timeout-minutes: 3
+
+      - name: "Full Clean"
+        run: make fclean
+        timeout-minutes: 1
+
+  run_tests:
+    needs: [check_program_compilation]
+    name: "Runs tests with criterion"
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - id: run_tests
+        run: make tests_run
+        timeout-minutes: 2

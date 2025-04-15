@@ -1,0 +1,282 @@
+classDiagram
+    %% Core Classes
+    class ArcadeCore {
+        -CoreState _state
+        -DLLoaderImpl<IDisplayModule> _displayLoader
+        -DLLoaderImpl<IGameModule> _gameLoader
+        -IDisplayModule* _displayModule
+        -IGameModule* _gameModule
+        -ScoreManager _scoreManager
+        -std::string _username
+        -std::vector<std::string> _graphicLibPaths
+        -std::vector<std::string> _gameLibPaths
+        -size_t _currentGraphicIndex
+        -size_t _currentGameIndex
+        +ArcadeCore(const std::string& graphicLibPath)
+        +~ArcadeCore()
+        +void run()
+        -void loadLibraries()
+        -void detectGraphicLibraries()
+        -void detectGameLibraries()
+        -bool loadGraphicLibrary(const std::string& path)
+        -bool loadGameLibrary(const std::string& path)
+        -void switchNextGraphiclib()
+        -void switchPreviousGraphiclib()
+        -void switchGamelib()
+        -void displayMenu()
+        -void handleMenuInputs()
+        -void handleGameInputs()
+        -void updateGame()
+        -void renderGame()
+        -void displayGameOver()
+    }
+    
+    class DLLoader {
+        -void* handle
+        -void** fptr
+        +DLLoader()
+        +bool my_dlopen(const std::string& path)
+        +T my_dlsysm(const std::string& path_functions)
+        +void my_dl_error()
+        +void my_dlclose()
+    }
+    
+    class DLLoaderImpl~T~ {
+        -void* _handle
+        -T* _instance
+        +DLLoaderImpl()
+        +~DLLoaderImpl()
+        +bool load(const std::string& path, const std::string& createFuncName)
+        +void unload()
+        +T* getInstance() const
+    }
+    
+    class ScoreManager {
+        -std::string scoresDir
+        -std::map<std::string, std::vector<Score>> gameScores
+        +ScoreManager()
+        +void loadScores(const std::string& gameName)
+        +void saveScores(const std::string& gameName)
+        +void addScore(const std::string& gameName, const std::string& playerName, int score)
+        +std::pair<std::string, int> getHighScore(const std::string& gameName)
+        +void loadAllScores(const std::vector<std::string>& gamePaths)
+        +void displayScores() const
+    }
+    
+    %% Interfaces
+    class IDisplayModule {
+        <<interface>>
+        +~IDisplayModule()
+        +void init()
+        +void stop()
+        +void clear()
+        +void render()
+        +void present()
+        +bool isKeyPressed(const std::string& key)
+        +std::string getName() const
+        +void handleInput()
+        +std::string getTextInput(const std::string& prompt, const std::string& initialText)
+        +bool shouldQuit() const
+        +void drawRect(int x, int y, int width, int height, int r, int g, int b, int a)
+        +void drawText(const std::string& text, int x, int y, int r, int g, int b, int a)
+        +void drawCircle(int x, int y, int radius, int r, int g, int b, int a)
+    }
+    
+    class IGameModule {
+        <<interface>>
+        +~IGameModule()
+        +void init()
+        +void processEvent(GameEvent event)
+        +void update()
+        +bool isGameOver() const
+        +std::string getName() const
+        +int getScore() const
+        +bool isPaused() const
+        +void reset()
+        +std::vector<std::vector<Cell>> getGrid() const
+        +std::vector<GameEntity> getEntities() const
+    }
+    
+    %% Display Implementations
+    class NCursesDisplay {
+        -int _ch
+        +NCursesDisplay()
+        +~NCursesDisplay()
+        +void init()
+        +void stop()
+        +void clear()
+        +void render()
+        +void present()
+        +bool isKeyPressed(const std::string& key)
+        +std::string getName() const
+        +void handleInput()
+        +bool shouldQuit() const
+        +void drawRect(int x, int y, int width, int height, int r, int g, int b, int a)
+        +void drawText(const std::string& text, int x, int y, int r, int g, int b, int a)
+        +void drawCircle(int x, int y, int radius, int r, int g, int b, int a)
+        +std::string getTextInput(const std::string& prompt, const std::string& initialText)
+    }
+    
+    class SDL2Display {
+        -SDL_Window* _window
+        -SDL_Renderer* _renderer
+        -TTF_Font* _font
+        -std::map<std::string, bool> _keyStates
+        -std::map<std::string, SDL_Keycode> _keyMap
+        -bool _quit
+        +SDL2Display()
+        +~SDL2Display()
+        +void init()
+        +void stop()
+        +void clear()
+        +void render()
+        +void present()
+        +bool isKeyPressed(const std::string& key)
+        +std::string getName() const
+        +void handleInput()
+        +bool shouldQuit() const
+        +void drawRect(int x, int y, int width, int height, int r, int g, int b, int a)
+        +void drawText(const std::string& text, int x, int y, int r, int g, int b, int a)
+        +void drawCircle(int x, int y, int radius, int r, int g, int b, int a)
+        +std::string getTextInput(const std::string& prompt, const std::string& initialText)
+    }
+    
+    class SFMLDisplay {
+        -sf::RenderWindow* _window
+        -sf::Font _font
+        -bool _quit
+        -std::unordered_map<std::string, sf::Keyboard::Key> _keyMap
+        +SFMLDisplay()
+        +~SFMLDisplay()
+        +void init()
+        +void stop()
+        +void clear()
+        +void render()
+        +void present()
+        +bool isKeyPressed(const std::string& key)
+        +std::string getName() const
+        +void handleInput()
+        +bool shouldQuit() const
+        +void drawRect(int x, int y, int width, int height, int r, int g, int b, int a)
+        +void drawText(const std::string& text, int x, int y, int r, int g, int b, int a)
+        +void drawCircle(int x, int y, int radius, int r, int g, int b, int a)
+        +std::string getTextInput(const std::string& prompt, const std::string& initialText)
+    }
+    
+    %% Game Implementation Example
+    class Pacman {
+        -bool _isPaused
+        -bool _gameOver
+        -Position _pacman
+        -Direction _direction
+        -std::array<Ghost, 4> _ghosts
+        -std::vector<std::vector<CellType>> _map
+        -int _score
+        +Pacman()
+        +~Pacman()
+        +void init()
+        +void update()
+        +void processEvent(GameEvent event)
+        +bool isGameOver() const
+        +int getScore() const
+        +std::string getName() const
+        +bool isPaused() const
+        +void reset()
+        +std::vector<std::vector<Cell>> getGrid() const
+        +std::vector<GameEntity> getEntities() const
+    }
+
+    class Snake {
+        -bool _isPaused
+        -bool _gameOver
+        -Direction _direction
+        -std::deque<Position> _snake
+        -int _score
+        -Position _food
+        -Direction _pendingDirection
+        -double _speed
+        +Snake()
+        +~Snake()
+        +void init()
+        +void update()
+        +void render()
+        +void handleInput()
+        +void processEvent(GameEvent event)
+        +bool isGameOver() const
+        +int getScore() const
+        +const std::deque<Position>& getSnake() const
+        +const Position& getFood() const
+        +int getGridWidth() const
+        +int getGridHeight() const
+        +bool isPaused() const override
+        +std::vector<std::vector<Cell>> getGrid() const
+        +std::vector<GameEntity> getEntities() const
+    }
+
+    class Nibbler {
+        -bool _isPaused
+        -bool _gameOver
+        -Direction _direction
+        -std::deque<Position> _snake
+        -int _score
+        -Position _food
+        -Direction _pendingDirection
+        -double _speed
+        +Snake()
+        +~Snake()
+        +void init()
+        +void update()
+        +void render()
+        +void handleInput()
+        +void processEvent(GameEvent event)
+        +bool isGameOver() const
+        +int getScore() const
+        +const std::deque<Position>& getSnake() const
+        +const Position& getFood() const
+        +int getGridWidth() const
+        +int getGridHeight() const
+        +bool isPaused() const override
+        +std::vector<std::vector<Cell>> getGrid() const
+        +std::vector<GameEntity> getEntities() const
+    }
+    
+    %% Utility Structures
+    class GameEvent {
+        <<struct>>
+        +EventType type
+        +std::string key
+    }
+    
+    class Cell {
+        <<struct>>
+        +CellType type
+        +int color
+    }
+    
+    class GameEntity {
+        <<struct>>
+        +EntityType type
+        +int x
+        +int y
+        +int color
+        +Direction direction
+    }
+    
+    %% Relationships
+    ArcadeCore --> DLLoaderImpl : uses
+    ArcadeCore --> ScoreManager : uses
+    ArcadeCore --> IDisplayModule : uses
+    ArcadeCore --> IGameModule : uses
+    
+    DLLoaderImpl --|> DLLoader : extends
+    DLLoaderImpl ..> IDisplayModule : loads
+    DLLoaderImpl ..> IGameModule : loads
+    
+    IDisplayModule <|.. NCursesDisplay : implements
+    IDisplayModule <|.. SDL2Display : implements
+    IDisplayModule <|.. SFMLDisplay : implements
+    
+    IGameModule <|.. Pacman : implements
+    
+    Pacman --> GameEntity : creates
+    Pacman --> Cell : uses
