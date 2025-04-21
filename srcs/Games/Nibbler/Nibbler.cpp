@@ -82,32 +82,41 @@ namespace arcade {
         _lastUpdateTime = std::chrono::steady_clock::now();
     }
 
-    void Nibbler::initMazeAndFood() {
-        _maze.assign(GRID_HEIGHT, std::vector<bool>(GRID_WIDTH, false));
-        _foodMap.assign(GRID_HEIGHT, std::vector<bool>(GRID_WIDTH, true));
+  void Nibbler::initMazeAndFood() {
+    _maze.assign(GRID_HEIGHT, std::vector<bool>(GRID_WIDTH, false));
+    _foodMap.assign(GRID_HEIGHT, std::vector<bool>(GRID_WIDTH, false));
 
-        for (int y = 0; y < GRID_HEIGHT; y++) {
-            for (int x = 0; x < GRID_WIDTH; x++) {
-                if (y == 0 || y == GRID_HEIGHT - 1 || x == 0 || x == GRID_WIDTH - 1) {
-                    _maze[y][x] = true;
-                    _foodMap[y][x] = false;
-                }
+    for (int y = 0; y < GRID_HEIGHT; y++) {
+        for (int x = 0; x < GRID_WIDTH; x++) {
+            if (y == 0 || y == GRID_HEIGHT - 1 || x == 0 || x == GRID_WIDTH - 1) {
+                _maze[y][x] = true;
+                _foodMap[y][x] = false;
             }
         }
-
-        int midX = GRID_WIDTH / 2;
-        for (int y = 2; y < GRID_HEIGHT - 2; y++) {
-            _maze[y][midX] = true;
-            _foodMap[y][midX] = false;
-        }
-
-        int midY = GRID_HEIGHT / 2;
-        for (int x = 2; x < GRID_WIDTH - 2; x++) {
-            _maze[midY][x] = true;
-            _foodMap[midY][x] = false;
-        }
-        
     }
+
+    int midX = GRID_WIDTH / 2;
+    for (int y = 2; y < GRID_HEIGHT - 2; y++) {
+        _maze[y][midX] = true;
+        _foodMap[y][midX] = false;
+    }
+
+    int midY = GRID_HEIGHT / 2;
+    for (int x = 2; x < GRID_WIDTH - 2; x++) {
+        _maze[midY][x] = true;
+        _foodMap[midY][x] = false;
+    }
+
+    std::vector<Position> foodPositions = {
+        {3, 6}, {5, 5}, {8, 2}, {12, 4}, {13, 8}
+    };
+
+    for (const auto &pos : foodPositions) {
+        if (isValidPosition(pos) && !_maze[pos.y][pos.x]) {
+            _foodMap[pos.y][pos.x] = true;
+        }
+    }
+}
 
     bool Nibbler::isValidPosition(const Position &pos) const {
         return pos.x >= 0 && pos.x < GRID_WIDTH && pos.y >= 0 && pos.y < GRID_HEIGHT;
@@ -203,77 +212,98 @@ namespace arcade {
         }
         return false;
     }
+    
+void Nibbler::moveSnake() {
+    Position newHead = _snake.front();
 
-    void Nibbler::moveSnake() {
-        Position newHead = _snake.front();
+    switch (_direction) {
+        case Direction::UP:    newHead.y--; break;
+        case Direction::DOWN:  newHead.y++; break;
+        case Direction::LEFT:  newHead.x--; break;
+        case Direction::RIGHT: newHead.x++; break;
+    }
 
-        switch (_direction) {
-            case Direction::UP:    newHead.y--; break;
-            case Direction::DOWN:  newHead.y++; break;
-            case Direction::LEFT:  newHead.x--; break;
-            case Direction::RIGHT: newHead.x++; break;
+    if (isWall(newHead)) {
+        Direction leftDir = leftOf(_direction);
+        Direction rightDir = rightOf(_direction);
+        Position leftPos = _snake.front();
+        Position rightPos = _snake.front();
+
+        switch (leftDir) {
+            case Direction::UP:    leftPos.y--; break;
+            case Direction::DOWN:  leftPos.y++; break;
+            case Direction::LEFT:  leftPos.x--; break;
+            case Direction::RIGHT: leftPos.x++; break;
+        }
+        switch (rightDir) {
+            case Direction::UP:    rightPos.y--; break;
+            case Direction::DOWN:  rightPos.y++; break;
+            case Direction::LEFT:  rightPos.x--; break;
+            case Direction::RIGHT: rightPos.x++; break;
         }
 
-        if (isWall(newHead)) {
-            Direction leftDir = leftOf(_direction);
-            Direction rightDir = rightOf(_direction);
-            Position leftPos = _snake.front();
-            Position rightPos = _snake.front();
+        bool canTurnLeft = isValidPosition(leftPos) && !isWall(leftPos);
+        bool canTurnRight = isValidPosition(rightPos) && !isWall(rightPos);
 
-            switch (leftDir) {
-                case Direction::UP:    leftPos.y--; break;
-                case Direction::DOWN:  leftPos.y++; break;
-                case Direction::LEFT:  leftPos.x--; break;
-                case Direction::RIGHT: leftPos.x++; break;
-            }
-            switch (rightDir) {
-                case Direction::UP:    rightPos.y--; break;
-                case Direction::DOWN:  rightPos.y++; break;
-                case Direction::LEFT:  rightPos.x--; break;
-                case Direction::RIGHT: rightPos.x++; break;
-            }
-
-            bool canTurnLeft = isValidPosition(leftPos) && !isWall(leftPos);
-            bool canTurnRight = isValidPosition(rightPos) && !isWall(rightPos);
-
-            if (canTurnLeft && _pendingDirection == leftDir) {
-                _direction = leftDir;
-                newHead = leftPos;
-            } else if (canTurnRight && _pendingDirection == rightDir) {
-                _direction = rightDir;
-                newHead = rightPos;
-            } else if (canTurnLeft && !canTurnRight) {
-                _direction = leftDir;
-                newHead = leftPos;
-            } else if (canTurnRight && !canTurnLeft) {
-                _direction = rightDir;
-                newHead = rightPos;
-            } else if (canTurnLeft && canTurnRight) {
-                _direction = leftDir;
-                newHead = leftPos;
-            } else {
-                return;
-            }
-        }
-
-        if (checkCollision(newHead)) {
-            _gameOver = true;
+        if (canTurnLeft && _pendingDirection == leftDir) {
+            _direction = leftDir;
+            newHead = leftPos;
+        } else if (canTurnRight && _pendingDirection == rightDir) {
+            _direction = rightDir;
+            newHead = rightPos;
+        } else if (canTurnLeft && !canTurnRight) {
+            _direction = leftDir;
+            newHead = leftPos;
+        } else if (canTurnRight && !canTurnLeft) {
+            _direction = rightDir;
+            newHead = rightPos;
+        } else if (canTurnLeft && canTurnRight) {
+            _direction = leftDir;
+            newHead = leftPos;
+        } else {
             return;
         }
+    }
 
-        _snake.push_front(newHead);
+    bool willGrow = isFood(newHead);
 
-        if (isFood(newHead)) {
-            eatFoodAt(newHead);
-        } else {
-            _snake.pop_back();
+   
+    bool collision = false;
+    if (willGrow) {
+        for (auto it = std::next(_snake.begin()); it != _snake.end(); ++it) {
+            if (it->x == newHead.x && it->y == newHead.y) {
+                collision = true;
+                break;
+            }
         }
-
-        if (!foodRemaining()) {
-            std::cout << "Level complete! Score: " << _score << std::endl;
-            reset();
+    } else {
+        auto endIt = _snake.end();
+        --endIt; 
+        for (auto it = std::next(_snake.begin()); it != endIt; ++it) {
+            if (it->x == newHead.x && it->y == newHead.y) {
+                collision = true;
+                break;
+            }
         }
     }
+    if (collision) {
+        _gameOver = true;
+        return;
+    }
+
+    _snake.push_front(newHead);
+    if (willGrow) {
+        eatFoodAt(newHead);
+    } else {
+        _snake.pop_back();
+    }
+
+    if (!foodRemaining()) {
+        std::cout << "Level complete! Score: " << _score << std::endl;
+        reset();
+    }
+}
+
 
     std::vector<std::vector<Cell>> Nibbler::getGrid() const {
         std::vector<std::vector<Cell>> grid(GRID_HEIGHT, std::vector<Cell>(GRID_WIDTH, {CellType::EMPTY, 0}));
@@ -281,7 +311,7 @@ namespace arcade {
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
                 if (_maze[y][x]) {
-                    grid[y][x] = {CellType::WALL, 7};
+                    grid[y][x] = {CellType::WALL, 1};
                 } else if (_foodMap[y][x]) {
                     grid[y][x] = {CellType::FOOD, 2};
                 }

@@ -19,7 +19,7 @@ OBJ_DIR = obj
 
 TEST_DIR = tests
 
-FLAGS = -Wall -Wextra -std=c++20 -MMD -MP -fno-gnu-unique
+FLAGS = -Wextra -std=c++20 -MMD -MP -fno-gnu-unique
 
 CFLAGS = -g -I./$(INCLUDE_DIR)
 

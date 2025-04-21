@@ -50,8 +50,7 @@ namespace arcade
             unload();
 
             _handle = dlopen(path.c_str(), RTLD_LAZY);
-            if (!_handle)
-            {
+            if (!_handle) {
                 std::cerr << "DLLoader error: " << dlerror() << std::endl;
                 return false;
             }
@@ -62,8 +61,7 @@ namespace arcade
             CreateFunc createFunc = reinterpret_cast<CreateFunc>(dlsym(_handle, createFuncName.c_str()));
 
             const char *dlsymError = dlerror();
-            if (dlsymError)
-            {
+            if (dlsymError) {
                 std::cerr << "DLLoader error: " << dlsymError << std::endl;
                 dlclose(_handle);
                 _handle = nullptr;
@@ -75,32 +73,25 @@ namespace arcade
         }
         void unload()
         {
-            if (_instance && _handle)
-            {
+            if (_instance && _handle) {
                 typedef void (*DestroyFunc)(T *);
                 DestroyFunc destroyFunc = reinterpret_cast<DestroyFunc>(dlsym(_handle, "destroyDisplay"));
 
                 if (destroyFunc)
-                {
                     destroyFunc(_instance);
-                }
                 else
-                {
                     delete _instance;
-                }
 
                 _instance = nullptr;
             }
 
-            if (_handle)
-            {
+            if (_handle){
                 dlclose(_handle);
                 _handle = nullptr;
             }
         }
 
-        T *getInstance() const
-        {
+        T *getInstance() const {
             return _instance;
         }
     };

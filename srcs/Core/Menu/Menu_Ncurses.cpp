@@ -6,7 +6,6 @@
 */
 
 #include "../../../includes/Core/ArcadeCore.hpp"
-#include <ncurses.h>
 
 using namespace arcade;
 
@@ -18,6 +17,8 @@ void ArcadeCore::displayNCursesMenu() {
     }
     _displayModule->init();
     _displayModule->clear();
+    refreshLibraryLists();
+
 
     std::string title = "====================================";
     _displayModule->drawText(title, 5, 2, 255, 255, 255, 255);
@@ -64,21 +65,21 @@ void arcade::ArcadeCore::handleNCursesMenuInputs()
     _graphicLibPaths = removeDuplicateGraphics(_graphicLibPaths);
     if (isDebouncedKeyPressed("ENTER", _returnReleased)) {
          if (!_graphicLibPaths.empty()) {
+            _displayModule->clear();
             loadGraphicLibrary(_graphicLibPaths[_currentGraphicIndex]);
         }
         if (!_gameLibPaths.empty()) {
-            clear();
             loadGameLibrary(_gameLibPaths[_currentGameIndex]);
             _state = CoreState::GAME;
         }
     }
     if (isDebouncedKeyPressed("F6", _f6Released)) {
-        clear();
+        _displayModule->clear();
         switchNextGraphiclib();
     }
 
     if (isDebouncedKeyPressed("F5", _f5Released)) {
-        clear();
+        _displayModule->clear();
         switchPreviousGraphiclib();
     }
     if (isDebouncedKeyPressed("LEFT", _leftReleased)) {
@@ -112,7 +113,6 @@ void arcade::ArcadeCore::handleNCursesMenuInputs()
     }
     
     if ((isDebouncedKeyPressed("ESCAPE", _escReleased))) {
-        clear();
         _displayModule->stop();
         _state = CoreState::EXIT;
     }
@@ -136,8 +136,8 @@ void ArcadeCore::displayNCursesGameOver() {
 
     _displayModule->clear();
 
-    int center_y = LINES / 2;
-    int center_x = COLS / 2;
+    int center_y = 22 / 2;
+    int center_x = 228 / 2;
 
     std::string gameOverText = "GAME OVER";
     _displayModule->drawText(gameOverText, center_x - gameOverText.length() / 2, center_y - 2, 255, 0, 0, 255);
@@ -156,41 +156,3 @@ void ArcadeCore::displayNCursesGameOver() {
 
     _displayModule->present();
 }
-/*
-if (isDebouncedKeyPressed("F6", _f6Released))
-        switchNextGraphiclib();
-
-    if (isDebouncedKeyPressed("F5", _f5Released))
-        switchPreviousGraphiclib();
-
-    if (isDebouncedKeyPressed("LEFT", _leftReleased)) {
-        if (!_gameLibPaths.empty()) {
-            _currentGameIndex = (_currentGameIndex + _gameLibPaths.size() - 1) % _gameLibPaths.size();
-        }
-    }
-    if (isDebouncedKeyPressed("RIGHT", _rightReleased)) {
-        if (!_gameLibPaths.empty()) {
-            _currentGameIndex = (_currentGameIndex + 1) % _gameLibPaths.size();
-        }
-    }
-
-    if (isDebouncedKeyPressed("UP", _upReleased)) {
-        if (!_graphicLibPaths.empty()) {
-            _currentGraphicIndex = (_currentGraphicIndex + _graphicLibPaths.size() - 1) % _graphicLibPaths.size();
-        }
-    }
-    if (isDebouncedKeyPressed("DOWN", _downReleased)) {
-        if (!_graphicLibPaths.empty()) {
-            _currentGraphicIndex = (_currentGraphicIndex + 1) % _graphicLibPaths.size();
-        }
-    }
-    if (_displayModule->isKeyPressed("N")) {
-        handleSFMLUserName();
-        displaySFMLMenu();
-        _state = CoreState::MENU;
-    }
-    
-    if (_displayModule->isKeyPressed("ESCAPE"))
-        _state = CoreState::EXIT;
-}
-*/
